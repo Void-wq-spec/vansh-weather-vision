@@ -6,48 +6,57 @@
 
 @layer base {
   :root {
-    /* Weather-themed color palette */
-    --background: 210 100% 98%;
-    --foreground: 215 25% 27%;
+    /* Enhanced weather-themed color palette */
+    --background: 220 20% 97%;
+    --foreground: 220 15% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 27%;
+    --card-foreground: 220 15% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 27%;
+    --popover-foreground: 220 15% 20%;
 
-    /* Weather brand colors - Sky blues */
-    --primary: 213 94% 68%;
+    /* Enhanced sky blues with more vibrancy */
+    --primary: 200 100% 50%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 213 100% 85%;
+    --primary-glow: 200 100% 70%;
+    --primary-dark: 200 100% 35%;
 
-    --secondary: 210 100% 96%;
-    --secondary-foreground: 215 25% 27%;
+    --secondary: 200 50% 95%;
+    --secondary-foreground: 220 15% 20%;
 
-    --muted: 210 100% 95%;
-    --muted-foreground: 215 15% 55%;
+    --muted: 200 30% 94%;
+    --muted-foreground: 220 10% 50%;
 
-    --accent: 199 89% 48%;
+    --accent: 280 100% 60%;
     --accent-foreground: 0 0% 100%;
+
+    --success: 140 70% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 45 100% 55%;
+    --warning-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
+    --border: 200 20% 88%;
     --input: 0 0% 100%;
-    --ring: 213 94% 68%;
+    --ring: 200 100% 50%;
 
     --radius: 0.75rem;
 
-    /* Weather gradients */
-    --gradient-sky: linear-gradient(135deg, hsl(213 94% 68%), hsl(199 89% 48%));
-    --gradient-sky-light: linear-gradient(135deg, hsl(210 100% 98%), hsl(213 100% 95%));
-    --gradient-clouds: linear-gradient(135deg, hsl(220 13% 91%), hsl(210 17% 98%));
-    --gradient-sunset: linear-gradient(135deg, hsl(14 91% 65%), hsl(34 100% 75%));
+    /* Enhanced weather gradients */
+    --gradient-sky: linear-gradient(135deg, hsl(200 100% 50%), hsl(240 100% 60%), hsl(280 100% 60%));
+    --gradient-sky-light: linear-gradient(135deg, hsl(220 20% 97%), hsl(200 50% 95%), hsl(240 30% 96%));
+    --gradient-sunset: linear-gradient(135deg, hsl(14 100% 60%), hsl(34 100% 70%), hsl(45 100% 75%));
+    --gradient-night: linear-gradient(135deg, hsl(240 30% 15%), hsl(260 40% 25%), hsl(280 50% 35%));
+    --gradient-success: linear-gradient(135deg, hsl(140 70% 45%), hsl(160 60% 50%));
     
-    /* Weather shadows */
-    --shadow-weather: 0 10px 30px -5px hsl(213 94% 68% / 0.2);
-    --shadow-glow: 0 0 20px hsl(213 100% 85% / 0.5);
+    /* Enhanced shadows */
+    --shadow-weather: 0 20px 40px -10px hsl(200 100% 50% / 0.15);
+    --shadow-glow: 0 0 30px hsl(200 100% 70% / 0.4);
+    --shadow-card: 0 10px 25px -5px hsl(220 20% 60% / 0.1);
     
     /* Animation variables */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

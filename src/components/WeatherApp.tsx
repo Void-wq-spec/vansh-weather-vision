@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
-import { Search, MapPin, Thermometer, Eye, Wind, Sunrise, Sunset, RefreshCw, Heart, Clock } from "lucide-react";
+import { Search, MapPin, Thermometer, Eye, Wind, Sunrise, Sunset, RefreshCw, Heart, Clock, Globe, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { WeatherIcon } from "./WeatherIcon";
 import { WeatherCard } from "./WeatherCard";
 import { ForecastCard } from "./ForecastCard";
+import { CountrySelector } from "./CountrySelector";
 import { useToast } from "@/hooks/use-toast";
+import { COUNTRIES, searchCities, getCountryByCityName } from "@/utils/countries";
 
 interface WeatherData {
   name: string;
@@ -21,6 +23,8 @@ interface WeatherData {
   description: string;
   icon: string;
   timezone: number;
+  pressure?: number;
+  uv_index?: number;
 }
 
 interface ForecastData {
@@ -42,23 +46,52 @@ export const WeatherApp = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [error, setError] = useState<string | null>(null);
   
   const { toast } = useToast();
 
-  // Demo data for immediate functionality
-  const demoWeatherData: WeatherData = {
-    name: "New York",
-    country: "US",
-    temp: 22,
-    feels_like: 25,
-    humidity: 65,
-    visibility: 10,
-    wind_speed: 3.5,
-    sunrise: 1703246400,
-    sunset: 1703282400,
-    description: "Clear sky",
-    icon: "01d",
-    timezone: -18000
+  // Enhanced demo data with more realistic weather patterns
+  const getWeatherDataForCity = (cityName: string): WeatherData => {
+    const cityWeatherMap: Record<string, Partial<WeatherData>> = {
+      "mumbai": { temp: 32, humidity: 78, description: "Humid and partly cloudy", icon: "02d" },
+      "delhi": { temp: 28, humidity: 65, description: "Hazy sunshine", icon: "01d" },
+      "bangalore": { temp: 24, humidity: 72, description: "Pleasant and mild", icon: "03d" },
+      "chennai": { temp: 31, humidity: 82, description: "Hot and humid", icon: "02d" },
+      "kolkata": { temp: 30, humidity: 75, description: "Warm and humid", icon: "02d" },
+      
+      "new york": { temp: 18, humidity: 60, description: "Clear sky", icon: "01d" },
+      "los angeles": { temp: 25, humidity: 55, description: "Sunny", icon: "01d" },
+      "chicago": { temp: 15, humidity: 65, description: "Partly cloudy", icon: "02d" },
+      "houston": { temp: 29, humidity: 70, description: "Hot and humid", icon: "02d" },
+      "phoenix": { temp: 35, humidity: 35, description: "Hot and dry", icon: "01d" },
+      
+      "london": { temp: 12, humidity: 75, description: "Overcast", icon: "04d" },
+      "paris": { temp: 16, humidity: 68, description: "Light rain", icon: "10d" },
+      "tokyo": { temp: 22, humidity: 70, description: "Partly sunny", icon: "02d" },
+      "sydney": { temp: 21, humidity: 65, description: "Clear", icon: "01d" },
+      "dubai": { temp: 38, humidity: 45, description: "Hot and sunny", icon: "01d" },
+    };
+
+    const cityKey = cityName.toLowerCase();
+    const cityData = cityWeatherMap[cityKey];
+    const country = getCountryByCityName(cityName);
+
+    return {
+      name: cityName,
+      country: country?.name || "Unknown",
+      temp: cityData?.temp || Math.floor(Math.random() * 30) + 5,
+      feels_like: (cityData?.temp || 20) + Math.floor(Math.random() * 5),
+      humidity: cityData?.humidity || Math.floor(Math.random() * 40) + 40,
+      visibility: Math.floor(Math.random() * 15) + 5,
+      wind_speed: Math.floor(Math.random() * 10) + 1,
+      sunrise: 1703246400,
+      sunset: 1703282400,
+      description: cityData?.description || "Clear sky",
+      icon: cityData?.icon || "01d",
+      timezone: Math.floor(Math.random() * 24) * 3600,
+      pressure: 1000 + Math.floor(Math.random() * 50),
+      uv_index: Math.floor(Math.random() * 11),
+    };
   };
 
   const demoForecastData: ForecastData[] = [
@@ -70,8 +103,8 @@ export const WeatherApp = () => {
   ];
 
   useEffect(() => {
-    // Initialize with demo data
-    setWeatherData(demoWeatherData);
+    // Initialize with Mumbai weather
+    setWeatherData(getWeatherDataForCity("Mumbai"));
     setForecastData(demoForecastData);
     
     // Update time every second
@@ -92,37 +125,45 @@ export const WeatherApp = () => {
     if (!searchQuery.trim()) return;
     
     setIsLoading(true);
+    setError(null);
     
-    // Simulate API call with demo data
-    setTimeout(() => {
-      const cities = ["London", "Tokyo", "Paris", "Sydney", "Mumbai"];
-      const randomCity = cities[Math.floor(Math.random() * cities.length)];
-      
-      setWeatherData({
-        ...demoWeatherData,
-        name: searchQuery || randomCity,
-        temp: Math.floor(Math.random() * 30) + 5,
-        feels_like: Math.floor(Math.random() * 35) + 5,
-        humidity: Math.floor(Math.random() * 40) + 40,
-      });
+    try {
+      // Use enhanced weather data function
+      const newWeatherData = getWeatherDataForCity(searchQuery);
+      setWeatherData(newWeatherData);
       
       setIsLoading(false);
       toast({
         title: "Weather Updated!",
-        description: `Showing weather for ${searchQuery || randomCity}`,
+        description: `Showing weather for ${newWeatherData.name}`,
       });
-    }, 1000);
+    } catch (err) {
+      setError("Failed to fetch weather data");
+      setIsLoading(false);
+      toast({
+        title: "Error",
+        description: "Failed to fetch weather data. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCitySelect = (city: string, country: string) => {
+    setSearchQuery(city);
+    const newWeatherData = getWeatherDataForCity(city);
+    setWeatherData(newWeatherData);
+    toast({
+      title: "Weather Updated!",
+      description: `Showing weather for ${city}, ${country}`,
+    });
   };
 
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         () => {
-          setWeatherData({
-            ...demoWeatherData,
-            name: "Your Location",
-            temp: Math.floor(Math.random() * 25) + 10,
-          });
+          const locationWeatherData = getWeatherDataForCity("Your Location");
+          setWeatherData(locationWeatherData);
           toast({
             title: "Location Found!",
             description: "Showing weather for your current location",
@@ -314,6 +355,9 @@ export const WeatherApp = () => {
             ))}
           </div>
         </Card>
+
+        {/* Country Selector */}
+        <CountrySelector onCitySelect={handleCitySelect} />
 
         {/* Favorites */}
         {favorites.length > 0 && (
